@@ -31,7 +31,7 @@ function parseServerIndex(s) {
 function createAccountant() {
   const accountantDefaults = {
     enableBuyer: true,
-    saveAmount: 200_000_000_000, //1_000_200_000;
+    saveAmount: 255_500_000, //1_000_200_000;
     raisePercent: 0.5,
     minTimeToRaise: 100,
     maxTimeToRaise: 5 * 60 * 1_000, // 5 minutes
@@ -102,9 +102,9 @@ function createHackerTran() {
     hackCondition,
     getAttacks,
   
-    minHostRam: 8,
+    minHostRam: 64,
     saveHomeRam: 64,
-    useHomeThreads: 4,
+    useHomeThreads: 32,
     useHome: true,
     useRootedServers: true,
     useAttackerServers: true,

@@ -8,11 +8,10 @@ export async function main(ns) {
 }
 
 function writeReadMes(ns, contracts) {
-	for (let { ct, functionname } of contracts) {
-		const filename = `/contracts/solvers/${functionname}.txt`;
-		const rmer = `${functionname}.txt`;
+	for (let { ct, functionname, description } of contracts) {
+		const filename = `/contracts/descriptions/${functionname}.txt`;
 		ns.write(filename, `${ct}\n`, 'w');
-		ns.rm(rmer);
+		ns.write(filename, description, 'w');
 	}
 }
 
@@ -54,7 +53,12 @@ function* getContracts(ns) {
 		const parts = ct.replace(':', '').replace('-', '').replace('è', 'e').split(' ');
 		const functionname = `${buildFileName(parts)}`;
 		const shortcut = buildShortCut(parts);
-		yield { ct, shortcut, functionname };
+
+		const cfile = ns.codingcontract.createDummyContract(ct);
+		const description = ns.codingcontract.getDescription(cfile, 'home');
+		ns.rm(cfile);
+
+		yield { ct, shortcut, functionname, description };
 	}
 }
 

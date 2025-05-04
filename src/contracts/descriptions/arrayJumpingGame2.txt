@@ -1,0 +1,9 @@
+You are given the following array of integers:
+
+ 3,2,1,0,4,5,4
+
+ Each element in the array represents your MAXIMUM jump length at that position. This means that if you are at position i and your maximum jump length is n, you can jump to any position from i to i+n. 
+
+Assuming you are initially positioned at the start of the array, determine the minimum number of jumps to reach the end of the array.
+
+ If it's impossible to reach the end, then the answer should be 0.

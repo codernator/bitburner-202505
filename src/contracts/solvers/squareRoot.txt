@@ -1,9 +1,0 @@
-Square Root
-You are given a ~200 digit BigInt. Find the square root of this number, to the nearest integer.
-
-The input is a BigInt value. The answer must be the string representing the solution's BigInt value. The trailing "n" is not part of the string.
-
-Hint: If you are having trouble, you might consult https://en.wikipedia.org/wiki/Methods_of_computing_square_roots
-
-Input number:
-126074746369309592436408969649679057397005535619113614618748609384097875077707070843579050932980913998563686131618694381995760691140836002350898076299861816900334417146065184579947759257506765678871641

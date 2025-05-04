@@ -1,0 +1,1 @@
+A prime factor is a factor that is a prime number. What is the largest prime factor of 104416448?

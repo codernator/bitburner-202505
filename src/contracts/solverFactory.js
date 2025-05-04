@@ -9,6 +9,15 @@ export default function solverFactory(contractType) {
 	return null;
 }
 
+export function solverTestFactory(contractType) {
+	for (let solver of solvers) {
+		const {name, unitTests} = solver;
+		if (name === contractType)
+			return unitTests;
+	}
+	return null;
+}
+
 export function mapShortHand(ct) {
 	for (let solver of solvers) {
 		const {name, shortcut} = solver;

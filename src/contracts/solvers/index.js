@@ -1,7 +1,9 @@
 import ObjectSet from '/lib/objectSet.js';
 import solveStockTrader from '/contracts/solvers/algorithmicStockTrader.js';
-import solveFavMe from '/contracts/solvers/favme.js';
-import { validateParens } from '/contracts/lib/validator.js';
+import solveFindAllValidMathExpressions, { unitTests as testFindAllValidMathExpressions } from '/contracts/solvers/favme.js';
+import solveSanitizeParenthesisInExpression, { unitTests as testSanitizeParenthesisInExpression } from '/contracts/solvers/sanitizeParenthesesInExpression';
+import solveSubarrayWithMaximumSum, { unitTests as testSubarrayWithMaximumSum } from '/contracts/solvers/subarrayWithMaximumSum';
+import solveSquareRoot, { unitTests as testSquareRoot } from '/contracts/solvers/squareRoot';
 
 export default [
 	{ name: 'Algorithmic Stock Trader I', shortcut: 'ast1', method: algorithmicStockTrader1 },
@@ -15,7 +17,7 @@ export default [
 	{ name: 'Compression III: LZ Compression', shortcut: 'c3lc', method: compression3LZCompression },
 	{ name: 'Encryption I: Caesar Cipher', shortcut: 'e1cc', method: encryption1CaesarCipher },
 	{ name: 'Encryption II: Vigenère Cipher', shortcut: 'e2vc', method: encryption2VigenereCipher },
-	{ name: 'Find All Valid Math Expressions', shortcut: 'favme', method: findAllValidMathExpressions },
+	{ name: 'Find All Valid Math Expressions', shortcut: 'favme', method: solveFindAllValidMathExpressions, unitTests: testFindAllValidMathExpressions },
 	{ name: 'Find Largest Prime Factor', shortcut: 'flpf', method: findLargestPrimeFactor },
 	{ name: 'Generate IP Addresses', shortcut: 'gia', method: generateIPAddresses },
 	{ name: 'HammingCodes: Encoded Binary to Integer', shortcut: 'hebi', method: hammingcodesEncodedBinarytoInteger },
@@ -23,11 +25,11 @@ export default [
 	{ name: 'Merge Overlapping Intervals', shortcut: 'moi', method: mergeOverlappingIntervals },
 	{ name: 'Minimum Path Sum in a Triangle', shortcut: 'mpst', method: minimumPathSuminaTriangle },
 	{ name: 'Proper 2-Coloring of a Graph', shortcut: 'p2g', method: proper2ColoringofaGraph },
-	{ name: 'Sanitize Parentheses in Expression', shortcut: 'spe', method: sanitizeParenthesesinExpression },
+	{ name: 'Sanitize Parentheses in Expression', shortcut: 'spe', method: solveSanitizeParenthesisInExpression, unitTests: testSanitizeParenthesisInExpression },
 	{ name: 'Shortest Path in a Grid', shortcut: 'spg', method: shortestPathinaGrid },
 	{ name: 'Spiralize Matrix', shortcut: 'sm', method: spiralizeMatrix },
-  { name: 'Square Root', shortcut: 'sr', method: squareRoot },
-	{ name: 'Subarray with Maximum Sum', shortcut: 'swms', method: subarraywithMaximumSum },
+	{ name: 'Square Root', shortcut: 'sr', method: solveSquareRoot, unitTests: testSquareRoot },
+	{ name: 'Subarray with Maximum Sum', shortcut: 'swms', method: solveSubarrayWithMaximumSum, unitTests: testSubarrayWithMaximumSum },
 	{ name: 'Total Ways to Sum', shortcut: 'tws', method: totalWaystoSum },
 	{ name: 'Total Ways to Sum II', shortcut: 'tws2', method: totalWaystoSum2 },
 	{ name: 'Unique Paths in a Grid I', shortcut: 'upg1', method: uniquePathsinaGrid1 },
@@ -291,15 +293,6 @@ export async function encryption2VigenereCipher(ns, inputs, logger = () => {}) {
 	return encyphered.join("");	
 }
 
-
-// Find All Valid Math Expressions
-export function findAllValidMathExpressions(ns, inputs, logger = () => {}) {
-  logger(`Attempting FAVME with ${inputs}.`);
-  const [digitlist, target] = inputs;
-  return solveFavMe(ns, digitlist.split('').map(c => parseInt(c, 10)), target, logger);
-}
-
-
 // Find Largest Prime Factor
 export async function findLargestPrimeFactor(ns, inputs, logger = () => {}) {
 	const number = inputs;
@@ -538,25 +531,6 @@ export async function proper2ColoringofaGraph(ns, inputs, logger = () => {}) {
 	throw 'Proper 2-Coloring of a Graph -- Not Implemented';
 }
 
-
-// Sanitize Parentheses in Expression
-export async function sanitizeParenthesesinExpression(ns, inputs, logger = () => {}) {
-  if (validateParens(inputs)) return [inputs];
-
-  const solutions = [];
-  for (let i = 0; i < inputs.length; i++) {
-    const next = i === 0
-      ? inputs.substring(i + 1)
-      : `${inputs.substring(0,i)}${inputs.substring(i+1)}`;
-    if (validateParens(next))
-      solutions.push(next);
-  }
-  if (solutions.length > 0) return solutions;
-  
-	throw 'Sanitize Parentheses in Expression -- Not Implemented';
-}
-
-
 // Shortest Path in a Grid
 export async function shortestPathinaGrid(ns, inputs, logger = () => {}) {
 	if (!inputs)
@@ -643,22 +617,10 @@ export async function shortestPathinaGrid(ns, inputs, logger = () => {}) {
 	}
 }
 
-// Square Root
-export async function squareRoot(ns, inputs, logger = () => {}) {
-  throw 'Square Root -- Not Implemented';
-}
-
 // Spiralize Matrix
 export async function spiralizeMatrix(ns, inputs, logger = () => {}) {
 	throw 'Spiralize Matrix -- Not Implemented';
 }
-
-
-// Subarray with Maximum Sum
-export async function subarraywithMaximumSum(ns, inputs, logger = () => {}) {
-	throw 'Subarray with Maximum Sum -- Not Implemented';
-}
-
 
 // Total Ways to Sum
 export async function totalWaystoSum(ns, inputs, logger = () => {}) {
@@ -806,8 +768,6 @@ export async function uniquePathsinaGrid1(ns, inputs, logger = () => {}) {
 export async function uniquePathsinaGrid2(ns, inputs, logger = () => {}) {
 	if (!inputs)
 		return 0;
-
-	logger(inputs);
 
 	const RootPath = [''];
 	const rows = inputs.length;

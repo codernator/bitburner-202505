@@ -1,1 +1,0 @@
-HammingCodes: Encoded Binary to Integer

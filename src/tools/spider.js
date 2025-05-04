@@ -14,6 +14,7 @@ const schema = [
 	[ 'd', false],     // false for ascending, true for descending
 ];
 import { SpiderScanMode, SpiderScanner, getNumOpeners } from '/lib/spiderutil';
+import { stringSortFunc, valueSortFunc } from '/lib/sorting';
 import Nuker from '/tools/nuker';
 
 /** @param {NS} ns */
@@ -69,35 +70,22 @@ function reportPath(ns, target) {
 function getSortFunc(ns, s, d) {
 	switch (s.toLowerCase()) {
 		case 'name':
-			return stringSortFunc(ns, 'hostname', d);
+			return stringSortFunc('hostname', d);
 		case 'parent':
-			return stringSortFunc(ns, 'parent', d);
+			return stringSortFunc('parent', d);
 		case 'level':
-			return valueSortFunc(ns, 'requiredHackingSkill', d);
+			return valueSortFunc('requiredHackingSkill', d);
 		case 'ports':
-			return valueSortFunc(ns, 'numOpenPortsRequired', d);
+			return valueSortFunc('numOpenPortsRequired', d);
 		case 'money':
-			return valueSortFunc(ns, 'moneyMax', d);
+			return valueSortFunc('moneyMax', d);
 		case 'depth':
-			return valueSortFunc(ns, 'depth', d);
-    case 'ram':
-      return valueSortFunc(ns, 'maxRam', d);
+			return valueSortFunc('depth', d);
+		case 'ram':
+			return valueSortFunc('maxRam', d);
 		default:
 			return () => 0;
 	}
-}
-
-function stringSortFunc(ns, field, d) {
-	if (d)
-		return (a,b) => b[field].localeCompare(a[field]);
-
-	return (a,b) => a[field].localeCompare(b[field]);
-}
-
-function valueSortFunc(ns, field, d) {
-	return d
-		? (a,b) => b[field] - a[field]
-		: (a,b) => a[field] - b[field];
 }
 
 function reportNbd(ns) {

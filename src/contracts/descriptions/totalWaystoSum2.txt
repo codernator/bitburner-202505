@@ -1,0 +1,5 @@
+How many different distinct ways can the number 119 be written as a sum of integers contained in the set:
+
+ [1,4,6,10,11,12,13,18,19,22,24,25]?
+
+ You may use each integer in the set zero or more times.

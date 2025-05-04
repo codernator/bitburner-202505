@@ -1,5 +1,4 @@
-import solverFactory from '/contracts/solverFactory.js';
-import { mapShortHand } from 'contracts/solverFactory.js';
+import solverFactory, { mapShortHand } from '/contracts/solverFactory.js';
 
 /** @param {NS} ns */
 export async function main(ns) {
