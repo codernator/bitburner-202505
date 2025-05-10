@@ -1,4 +1,5 @@
-import { HacknetProduct } from '../lib/enums';
+import { Buyer, HacknetProduct } from '../lib/enums';
+import config from '../.config';
 
 const productMethods = {
     [HacknetProduct.Level]: {
@@ -16,23 +17,20 @@ const productMethods = {
     [HacknetProduct.Cache]: {
         getCost: (ns, i) => ns.hacknet.getCacheUpgradeCost(i, 1),
         buy: (ns, i) => ns.hacknet.upgradeCache(i, 1),
+    },
+    [HacknetProduct.Server]: {
+        getCost: (ns, _) => ns.hacknet.getPurchaseNodeCost(),
+        buy: (ns, _) => ns.hacknet.purchaseNode(),
     }
 };
 
 export default class Accountant {
-    calcIncome(ns) {
-      const { hacknet } = ns;
-      return [...Array(hacknet.numNodes()).keys()].reduce((p,i) => p + hacknet.getNodeStats(i).production, 0);
-    } 
-
-    getCost(ns, args) {
-        const [product, index] = args;
+    static getCost(ns, product, index) {
         const func = productMethods[product].getCost;
         return func(ns, index);
     }
 
-    buy(ns, args) {
-        const [product, index] = args;
+    static buy(ns, product, index) {
         const func = productMethods[product].buy;
         return func(ns, index);
     }

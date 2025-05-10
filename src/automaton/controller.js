@@ -1,19 +1,16 @@
 import config from './.config';
-import { allPorts } from './lib/constants';
 import StateCache from './lib/stateCache';
-
-const {
-    automaton: {
-        queuePort,
-        ackPort,
-        logPort,
-    }
-} = allPorts;
 
 const {
     controller: {
         modules,
-        lockDuration
+        lockDuration,
+        ports: {
+            queuePort,
+            ackPort,
+            logPort,
+            hackerStatePort,
+        },
     }
 } = config;
 
@@ -30,8 +27,8 @@ export async function main(ns) {
     ns.clearPort(logPort);
     
     const stateCache = new StateCache(
-        StateCache.createDefaultUnPersistFunc(ns),
-        StateCache.createDefaultPersistFunc(ns),
+        StateCache.createDefaultUnPersistFunc(ns, hackerStatePort),
+        StateCache.createDefaultPersistFunc(ns, hackerStatePort),
         ns
     );
     

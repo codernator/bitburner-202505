@@ -1,6 +1,4 @@
-import { allPorts } from './constants';
 import ObjectSet from '/lib/objectSet';
-const statePort = allPorts.stateCache.statePort;
 
 const createCacheItem = (value, cacheTime, expiration) => ({
     value,
@@ -15,6 +13,7 @@ export default class StateCache {
         return JSON.stringify([...state]);
     }
 
+    /** @param {NS} ns */
 	static deserialize(stateString) {
          const items = JSON.parse(stateString);
          const state = new ObjectSet(elementKeyFunc);
@@ -22,11 +21,12 @@ export default class StateCache {
          return state;
     };
 
-    static createDefaultPersistFunc(ns) {
+    /** @param {NS} ns */
+    static createDefaultPersistFunc(ns, statePort) {
         return state => ns.writePort(statePort, StateCache.serialize([...state]));
     }
 
-    static createDefaultUnPersistFunc(ns) {
+    static createDefaultUnPersistFunc(ns, statePort) {
         return () => {
             const stateString = ns.readPort(statePort);
             if (stateString === 'NULL PORT DATA')

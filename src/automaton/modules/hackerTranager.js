@@ -3,7 +3,7 @@ import config from '../.config';
 import StateCache from '../lib/stateCache';
 
 const {
-    hackerTran: {
+    hackerTranager: {
         attackScript,
 
         getAttacks,
