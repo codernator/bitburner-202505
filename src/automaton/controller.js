@@ -1,72 +1,83 @@
-import config from '/automaton/.config';
-import StateMan from '/automaton/lib/stateman';
+import config from './.config';
+import { allPorts } from './lib/constants';
+import StateCache from './lib/stateCache';
 
 const {
-  controller: {
-    queuePort,
-    ackPort,
-    logPort,
-    modules,
-  }
+    automaton: {
+        queuePort,
+        ackPort,
+        logPort,
+    }
+} = allPorts;
+
+const {
+    controller: {
+        modules,
+        lockDuration
+    }
 } = config;
+
 const home = 'home';
 
 /** @param {NS} ns */
 export async function main(ns) {
-  ns.clearLog();
-  ns.disableLog("ALL");
-  ns.ui.openTail();
+    ns.clearLog();
+    ns.disableLog('ALL');
+    ns.ui.openTail();
 
-  ns.clearPort(queuePort);
-  ns.clearPort(ackPort);
-  ns.clearPort(logPort);
-  
-  const stateMan = new StateMan(ns);
-  
-  ns.atExit(() => {
-    stateMan.save(ns);
-    ns.toast('Automaton Controller Shut Down.');
-  });
-  
-  while (true) {
-    for (let { script, createArgs } of modules.filter(m => m.enabled)) {
-      if (!ns.scriptRunning(script, home)) {
-        ns.exec(script, home, { }, ...createArgs(stateMan));
-      }
+    ns.clearPort(queuePort);
+    ns.clearPort(ackPort);
+    ns.clearPort(logPort);
+    
+    const stateCache = new StateCache(
+        StateCache.createDefaultUnPersistFunc(ns),
+        StateCache.createDefaultPersistFunc(ns),
+        ns
+    );
+    
+    ns.atExit(() => {
+        stateCache.save();
+        ns.toast('Automaton Controller Shut Down.');
+    });
+    
+    while (true) {
+        for (let { script, createArgs } of modules.filter(m => m.enabled)) {
+            if (!ns.scriptRunning(script, home)) {
+                ns.exec(script, home, { }, ...createArgs(stateCache));
+            }
+        }
+
+        processLogs();
+        processQueues();
+        processAcks();
+
+        stateCache.invalidate();
+
+        await ns.sleep(25);
     }
 
-    processLogs();
-    processQueues();
-    processAcks();
+    function processLogs() {
+        var target = ns.readPort(logPort);
+        if (target !== 'NULL PORT DATA') {
+            ns.print(target);
+        }
+    }
 
-    await ns.sleep(100);
-  }
+    function processQueues() {
+        var target = ns.readPort(queuePort);
+        if (target !== 'NULL PORT DATA') {
+            ns.print(`Locking ${target}.`);
+            const value = JSON.parse(target);
+            stateCache.track(ns, value, lockDuration);
+        }
+    }
 
-  function processLogs() {
-      var target = ns.readPort(logPort);
-      while (target != "NULL PORT DATA") {
-        ns.print(target);
-        target = ns.readPort(logPort);
-      }
-  }
-
-  function processQueues() {
-      var target = ns.readPort(queuePort);
-      while (target != "NULL PORT DATA") {
-        ns.print(`Locking ${target}.`);
-        const item = StateMan.deserializeOne(target);
-        stateMan.track(ns, item);
-        target = ns.readPort(queuePort);
-      }
-  }
-
-  function processAcks() {
-      var target = ns.readPort(ackPort);
-      while (target != "NULL PORT DATA") {
-        const item = StateMan.deserializeOne(target);
-        ns.print({ action: `Releasing ${target}.`, item });
-        stateMan.untrack(ns, item);
-        target = ns.readPort(ackPort);
-      }
-  }
+    function processAcks() {
+        var target = ns.readPort(ackPort);
+        if (target !== 'NULL PORT DATA') {
+            const value = JSON.parse(target);
+            ns.print({ action: `Releasing ${target}.`, value });
+            stateCache.untrack(ns, value);
+        }
+    }
 }

@@ -40,7 +40,7 @@ async function rootAvailable(ns) {
 	while (true) {
 		const scans = [...scanner.scan(ns, SpiderScanMode.Locked)].filter(s => numOpeners >= s.numOpenPortsRequired);
 		if (scans.length === 0) {
-			ns.tprint(`All possible targets have been rooted with the ${numOpeners} openers available.`);
+			ns.tprintRaw(`All possible targets have been rooted with the ${numOpeners} openers available.`);
 			return;
 		}
 
@@ -56,15 +56,15 @@ function reportPath(ns, target) {
 	const cased = target.toLowerCase();
 	const scans = [...scanner.scan(ns, SpiderScanMode.All)].filter(s => s.hostname.toLowerCase() === cased)
 	if (!scans || !scans.length) {
-		ns.tprint(`Target ${target} is not known.`);
+		ns.tprintRaw(`Target ${target} is not known.`);
 		return;
 	}
 	const [{ path }] = scans;
 	for (let i in path) {
-		ns.tprint(`${'>'.padStart(i * 3, ' ')} ${path[i]}`);
+		ns.tprintRaw(`${'>'.padStart(i * 3, ' ')} ${path[i]}`);
 	}
-	ns.tprint(`${'>'.padStart(path.length * 3, ' ')} ${target}`);
-	ns.tprint(`connect ${path.join(';connect ')};connect ${target}`);
+	ns.tprintRaw(`${'>'.padStart(path.length * 3, ' ')} ${target}`);
+	ns.tprintRaw(`connect ${path.join(';connect ')};connect ${target}`);
 }
 
 function getSortFunc(ns, s, d) {
@@ -94,9 +94,9 @@ function reportNbd(ns) {
 	ns.ui.clearTerminal();
 	for (let { hostname, depth, parent } of scans) {
 		if (depth === 0)
-			ns.tprint(`home; connect ${hostname}; backdoor`);
+			ns.tprintRaw(`home; connect ${hostname}; backdoor`);
 		else
-			ns.tprint(`connect ${parent}; connect ${hostname}; backdoor /* ${depth} */`);
+			ns.tprintRaw(`connect ${parent}; connect ${hostname}; backdoor /* ${depth} */`);
 	}
 
 	function getScans() {
@@ -128,9 +128,9 @@ function report(ns, mode, sortFunc) {
 	const numOpeners = getNumOpeners(ns);
 	const scans = getScans();
 
-	ns.tprint(title);
-	ns.tprint('-'.padEnd(title.length, '-'));
-	ns.tprint('  Host               Level Ports             Max Money      RAM     Used  Depth Parent');
+	ns.tprintRaw(title);
+	ns.tprintRaw('-'.padEnd(title.length, '-'));
+	ns.tprintRaw('  Host               Level Ports             Max Money      RAM     Used  Depth Parent');
 	for (let { hostname, requiredHackingSkill, numOpenPortsRequired, moneyMax, maxRam, ramUsed, depth, parent, hacked, backdoorInstalled } of scans) {
 		const hackable = hacked 
 			? backdoorInstalled ? 'b' : (hackingLevel >= requiredHackingSkill ? '+' : 'o')
@@ -144,7 +144,7 @@ function report(ns, mode, sortFunc) {
     const r = ns.formatNumber(maxRam, 2).padStart(8);
     const u = ns.formatNumber(ramUsed, 2).padStart(8);
 		const d = depth.toString().padStart(6);
-		ns.tprint(`${hackable} ${h} ${l} ${p} ${m} ${r} ${u} ${d} ${parent}`)
+		ns.tprintRaw(`${hackable} ${h} ${l} ${p} ${m} ${r} ${u} ${d} ${parent}`)
 	}
 
 	function getScans() {

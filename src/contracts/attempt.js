@@ -11,6 +11,7 @@ export async function main(ns) {
 	}
 
 	const contractType = ns.codingcontract.getContractType(contract, host)
+	ns.tprint({ contractType, contract, host });
 	const solver = solverFactory(contractType);
 	if (!solver) {
 		const triesRemaining = ns.codingcontract.getNumTriesRemaining(contract, host);
@@ -23,16 +24,16 @@ export async function main(ns) {
 	const inputs = ns.codingcontract.getData(contract, host);
 	const triesRemaining = ns.codingcontract.getNumTriesRemaining(contract, host);
 
-  try {
-    ns.tprint(`Solving ${contractType} on ${host} with ${inputs}`);
-    const answer = await solver(ns, inputs, msg => ns.print(msg));
-    ns.tprint(`Attempting: ${contractType} on ${host} WITH ${answer}`);
-    const reward = ns.codingcontract.attempt(answer, contract, host);
-    if (reward)
-      ns.tprint(`${host} ${contract} Success: ${reward}`);
-    else
-      ns.tprint(`${host} ${contract} Fail: ${triesRemaining} tries remaining.`);
-  } catch (e) {
-    ns.tprint(`${host} ${contract} ${e}`);
-  }
+	try {
+		ns.tprint(`Solving ${contractType} on ${host} with ${inputs}`);
+		const answer = await solver(ns, inputs, msg => ns.print(msg));
+		ns.tprint(`Attempting: ${contractType} on ${host} WITH ${answer}`);
+		const reward = ns.codingcontract.attempt(answer, contract, host);
+		if (reward)
+		ns.tprint(`${host} ${contract} Success: ${reward}`);
+		else
+		ns.tprint(`${host} ${contract} Fail: ${triesRemaining} tries remaining.`);
+	} catch (e) {
+		ns.tprint(`${host} ${contract} ${e}`);
+	}
 }

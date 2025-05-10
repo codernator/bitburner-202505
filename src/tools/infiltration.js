@@ -20,15 +20,15 @@ export async function main(ns) {
 	const locations = [...getLocations(ns)].sort(createSorter(orderBy, orderDescending));
 
 	ns.ui.clearTerminal();
-	ns.tprint(`City       Name                      Dclty         SoA Rep          Sell Cash`);
-	ns.tprint('-'.padEnd(77, '-'));
+	ns.tprintRaw(`City       Name                      Dclty         SoA Rep          Sell Cash`);
+	ns.tprintRaw('-'.padEnd(77, '-'));
 	for (let location of locations) {
 		const city = location.city.padEnd(10);
 		const name = location.name.padEnd(25);
 		const difficulty = (100 * (location.difficulty / 3)).toFixed(0).padStart(5);
 		const soaRep = location.SoARep.toLocaleString().padStart(15);
 		const sellCash = ns.formatNumber(location.sellCash).padStart(18);
-		ns.tprint(`${city} ${name} ${difficulty} ${soaRep} ${sellCash}`);
+		ns.tprintRaw(`${city} ${name} ${difficulty} ${soaRep} ${sellCash}`);
 	}
 }
 

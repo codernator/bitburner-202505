@@ -1,10 +1,19 @@
 import config from '/automaton/.config';
+//import Buyers from './buyers';
+//import Accountants from './accountants';
 
 const {
   accountant: {
     buyers,
   },
 } = config;
+
+///** @param {NS} ns */
+//export async function main(ns) {
+//  while (true) {
+//
+//  }
+//}
 
 /** @param {NS} ns */
 export function calcBudget(ns, buyer) {

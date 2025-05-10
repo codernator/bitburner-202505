@@ -1,11 +1,11 @@
-import StateMan from '/automaton/lib/stateman';
+import StateTranager from '/automaton/lib/statetranager';
 
 /** @param {NS} ns */
 export async function main(ns) {
   ns.clearLog();
   ns.ui.openTail();
   
-  const stateMan = new StateMan(ns);
-  ns.print(stateMan);
-  stateMan.clear(ns);
+  const stateTran = new StateTranager(ns);
+  ns.print(stateTran);
+  stateTran.clear(ns);
 }

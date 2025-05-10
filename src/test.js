@@ -1,7 +1,12 @@
+import solvers from 'contracts/solvers/index';
+
 /** @param {NS} ns */
 export async function main(ns) {
   ns.ui.clearTerminal();
-  ns.tprint(ns.infiltration.getPossibleLocations());
+
+  for (let { name, shortcut, method, unittests } of solvers) {
+    ns.tprint({ name, shortcut, method, unittests, missing: !method });  
+  }
   //ns.tprint(ns.heart.break());
   //ns.openDevMenu();
   return;

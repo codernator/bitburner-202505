@@ -1,15 +1,16 @@
 import ObjectSet from '/lib/objectSet.js';
-import solveStockTrader from '/contracts/solvers/algorithmicStockTrader.js';
-import solveFindAllValidMathExpressions, { unitTests as testFindAllValidMathExpressions } from '/contracts/solvers/favme.js';
-import solveSanitizeParenthesisInExpression, { unitTests as testSanitizeParenthesisInExpression } from '/contracts/solvers/sanitizeParenthesesInExpression';
-import solveSubarrayWithMaximumSum, { unitTests as testSubarrayWithMaximumSum } from '/contracts/solvers/subarrayWithMaximumSum';
-import solveSquareRoot, { unitTests as testSquareRoot } from '/contracts/solvers/squareRoot';
+import * as algorithmicStockTrader from './algorithmicStockTrader.js';
+import solveFindAllValidMathExpressions, { unitTests as testFindAllValidMathExpressions, unitTests } from './findAllValidMathExpressions';
+import solveSanitizeParenthesisInExpression, { unitTests as testSanitizeParenthesisInExpression } from './sanitizeParenthesesInExpression';
+import solveSquareRoot, { unitTests as testSquareRoot } from './squareRoot';
+import solveSubarrayWithMaximumSum, { unitTests as testSubarrayWithMaximumSum } from './subarrayWithMaximumSum';
+import * as totalWaysToSum from './totalWaysToSum.js';
 
 export default [
-	{ name: 'Algorithmic Stock Trader I', shortcut: 'ast1', method: algorithmicStockTrader1 },
-	{ name: 'Algorithmic Stock Trader II', shortcut: 'ast2', method: algorithmicStockTrader2 },
-	{ name: 'Algorithmic Stock Trader III', shortcut: 'ast3', method: algorithmicStockTrader3 },
-	{ name: 'Algorithmic Stock Trader IV', shortcut: 'ast4', method: algorithmicStockTrader4 },
+	{ name: 'Algorithmic Stock Trader I', shortcut: 'ast1', method: algorithmicStockTrader.solve1, unitTests: algorithmicStockTrader.unitTests },
+	{ name: 'Algorithmic Stock Trader II', shortcut: 'ast2', method: algorithmicStockTrader.solve2 },
+	{ name: 'Algorithmic Stock Trader III', shortcut: 'ast3', method: algorithmicStockTrader.solve3 },
+	{ name: 'Algorithmic Stock Trader IV', shortcut: 'ast4', method: algorithmicStockTrader.solve4 },
 	{ name: 'Array Jumping Game', shortcut: 'ajg', method: arrayJumpingGame },
 	{ name: 'Array Jumping Game II', shortcut: 'ajg2', method: arrayJumpingGame2 },
 	{ name: 'Compression I: RLE Compression', shortcut: 'c1rc', method: compression1RLECompression },
@@ -30,88 +31,11 @@ export default [
 	{ name: 'Spiralize Matrix', shortcut: 'sm', method: spiralizeMatrix },
 	{ name: 'Square Root', shortcut: 'sr', method: solveSquareRoot, unitTests: testSquareRoot },
 	{ name: 'Subarray with Maximum Sum', shortcut: 'swms', method: solveSubarrayWithMaximumSum, unitTests: testSubarrayWithMaximumSum },
-	{ name: 'Total Ways to Sum', shortcut: 'tws', method: totalWaystoSum },
-	{ name: 'Total Ways to Sum II', shortcut: 'tws2', method: totalWaystoSum2 },
+	{ name: 'Total Ways to Sum', shortcut: 'tws', method: totalWaysToSum.solve1, unitTests: totalWaysToSum.unitTests },
+	{ name: 'Total Ways to Sum II', shortcut: 'tws2', method: totalWaysToSum.solve2 },
 	{ name: 'Unique Paths in a Grid I', shortcut: 'upg1', method: uniquePathsinaGrid1 },
 	{ name: 'Unique Paths in a Grid II', shortcut: 'upg2', method: uniquePathsinaGrid2 },
 ];
-
-// Algorithmic Stock Trader I
-export async function algorithmicStockTrader1(ns, inputs, logger = () => {}) {
-	/* PASSED */
-	let subset = inputs;
-	let best = 0;
-	while (subset.length > 0) {
-		let subBest = 0;
-		const buy = subset.shift();
-		const subsub = [...subset];
-		while (subsub.length > 0) {
-			const sell = subsub.shift();
-			const profit = sell - buy;
-			subBest = Math.max(subBest, profit);
-		}
-		best = Math.max(best, subBest);
-	}
-	return best;
-}
-
-
-// Algorithmic Stock Trader II
-export async function algorithmicStockTrader2(ns, inputs, logger = () => {}) {
-	return solveStockTrader(1/0, inputs, logger);
-}
-
-
-// Algorithmic Stock Trader III
-export async function algorithmicStockTrader3(ns, inputs, logger = () => {}) {
-	/* PASSED */
-	const [p1, p2] = pass1(inputs);
-	return p1 + p2;
-
-	function pass1(subset) {
-		let bests = [0,0];
-		while (subset.length > 0) {
-			let subBests = [0,0];
-			const buy = subset.shift();
-			const subsub = [...subset];
-			while (subsub.length > 0) {
-				let sell = subsub.shift();
-				const profit = sell - buy;
-				if (profit > subBests[0]) {
-					const profit2 = pass2([...subsub]);
-					subBests = calcBests(subBests, [profit, profit2]);
-				}
-			}
-			bests = calcBests(bests, subBests);
-		}
-		return bests;
-	}
-
-	function calcBests(bests, profits) {
-		const b = bests[0] + bests[1];
-		const p = profits[0] + profits[1];
-		return p > b ? profits : bests;
-	}
-
-	function pass2(subset) {
-		let bestProfit = 0;
-		while (subset.length > 0) {
-			const buy = subset.shift();
-			for (let sell of subset) {
-				bestProfit = Math.max(sell - buy, bestProfit);
-			}
-		}
-		return bestProfit;
-	}	
-}
-
-
-// Algorithmic Stock Trader IV
-export async function algorithmicStockTrader4(ns, inputs, logger = () => {}) {
-	throw 'Algorithmic Stock Trader IV -- Incorrect Solution'
-	const [k, prices] = inputs;
-	return solveStockTrader(k, prices, logger);
-}
 
 
 // Array Jumping Game
@@ -621,86 +545,6 @@ export async function shortestPathinaGrid(ns, inputs, logger = () => {}) {
 export async function spiralizeMatrix(ns, inputs, logger = () => {}) {
 	throw 'Spiralize Matrix -- Not Implemented';
 }
-
-// Total Ways to Sum
-export async function totalWaystoSum(ns, inputs, logger = () => {}) {
-	//throw 'Total Ways to Sum -- No Solution Yet.'
-	// The values of P(n) 
-	// n    0  1  2  3  4  5  6   7   8   9   10  11  12  13   14
-	// P(n) 1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42, 56, 77, 101, 135,
-	// 5(n)    0, 1, 2, 5, 7, 12, 15, 22, 26, 35, 40, 51, 57, 70, 77, 92 ...
-	// answer is P(n) - 1 (because P(n) includes n)
-	const numPartitions = await countPartitions(inputs);
-	return numPartitions - 1;
-
-	async function countPartitions(n) {
-		if (n < 2)
-			return 0;
-
-		if (n === 2)
-			return 1;
-
-		const p = Array(n); // An array to store a partition
-		let iterations = 0;
-		let k = 0; // Index of last element in a partition
-		p[k] = n; // Initialize first partition as number itself
-	
-		// This loop first prints current partition then generates next
-		// partition. The loop stops when the current partition has all 1s
-		let numPartitions = 0;
-		let j = 0;
-		while (iterations < 100_000_000) {
-			if (++j === 1000) {
-				j = 0;
-				await ns.sleep(0);
-			}
-			iterations++;
-
-			// capture current partition
-			numPartitions++;
-	
-			// Generate next partition
-	
-			// Find the rightmost non-one value in p[]. Also, update the
-			// rem_val so that we know how much value can be accommodated
-			let rem_val = 0;
-			while (k >= 0 && p[k] == 1) {
-				rem_val += p[k];
-				k--;
-			}
-	
-			// if k < 0, all the values are 1 so there are no more partitions
-			if (k < 0)
-				break;
-	
-			// Decrease the p[k] found above and adjust the rem_val
-			p[k]--;
-			rem_val++;
-
-			// If rem_val is more, then the sorted order is violated. Divide
-			// rem_val in different values of size p[k] and copy these values at
-			// different positions after p[k]
-			while (rem_val > p[k]) {
-				p[k+1] = p[k];
-				rem_val = rem_val - p[k];
-				k++;
-			}
-	
-			// Copy rem_val to next position and increment position
-			p[k+1] = rem_val;
-			k++;
-		}
-
-		return numPartitions;
-	}	
-}
-
-
-// Total Ways to Sum II
-export async function totalWaystoSum2(ns, inputs, logger = () => {}) {
-	throw 'Total Ways to Sum II -- Not Implemented';
-}
-
 
 // Unique Paths in a Grid I
 export async function uniquePathsinaGrid1(ns, inputs, logger = () => {}) {

@@ -76,7 +76,7 @@ async function testByType(ns, contractTypeCode, iterations, verbose) {
 		const reward = ns.codingcontract.attempt(answer, dummy, 'home');
 		if (!reward || verbose) {
 			ns.tprint(`${(reward ? 'Success': 'Fail')} on ${dummy} (${(remaining - 1)}).`);
-      if (!reward) fails++;
+			if (!reward) fails++;
 		}
 	}
 

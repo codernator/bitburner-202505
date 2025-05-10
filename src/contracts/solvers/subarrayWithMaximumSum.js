@@ -1,4 +1,4 @@
-export default async function solve(ns, input, logger) {
+export default async function solve(ns, input, logger = () => {}) {
     let iterations = 0;
     let maximizer = Number.MIN_SAFE_INTEGER;
     for (let subarray of createSubArrays(input)) {

@@ -35,7 +35,7 @@ async function executeContracts(ns, contracts) {
 	const attempter = '/contracts/attempt.js';
 	const svchost = 'home';
 	for (let { hostname, filename } of contracts) {
-    ns.tprint(`Attempting ${filename} on ${hostname}`);
+		ns.tprint(`Attempting ${filename} on ${hostname}`);
 		const pid = ns.exec(attempter, svchost, { threads: 1 }, ...[filename, hostname]);
 		while(ns.isRunning(pid, svchost))
 			await ns.sleep(100);
