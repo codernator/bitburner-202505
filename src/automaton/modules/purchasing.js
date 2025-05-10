@@ -118,7 +118,7 @@ function processRequisition(ns, requisition, income, buyerLocks) {
         return RequisitionResponse.Denied(ApprovalReason.InsufficientIncome, requisition, { cost, budget, timeToRaise });
 
     if (!accountant.buy(ns, product, ...args))
-        return RequisitionResponse.Denied(ApprovalReason.InsufficientFunds, requisition, { cost, budget });
+        return RequisitionResponse.Denied(ApprovalReason.PurchaseFailed, requisition, { cost, budget });
 
     if (timeToRaise > 0)
         buyerLocks.track(buyer, timeToRaise);

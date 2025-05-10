@@ -20,6 +20,7 @@ export class ApprovalReason {
     static get NoAccountant() { return 'No Accountant for Buyer'; };
     static get InsufficientFunds() { return 'Insufficient Funds'; };
     static get InsufficientIncome() { return 'Insufficient Income'; };
+    static get PurchaseFailed() { return 'Purchase Failed'; };
     static get Approved() { return 'Approved'; };
 
     static getWait(reason) {
@@ -28,8 +29,9 @@ export class ApprovalReason {
             case ApprovalReason.BuyerLocked: { return 50; };
             case ApprovalReason.BuyerSuspended: { return 1_000 * 60 * 1; };
             case ApprovalReason.NoAccountant: { return 1_000 * 60 * 10; };
-            case ApprovalReason.InsufficientFunds: { return 250; };
+            case ApprovalReason.InsufficientFunds: { return 30 * 1_000; };
             case ApprovalReason.InsufficientIncome: { return 1_000 * 60 * 1; };
+            case ApprovalReason.PurchaseFailed: { return 40 * 1_000; };
             default: return 0;
         }
     }

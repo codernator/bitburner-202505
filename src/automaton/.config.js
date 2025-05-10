@@ -245,6 +245,8 @@ function createController() {
 }
 
 export default {
+    allPorts,
+
     purchasing: createPurchasing(),
     controller: createController(),
     
