@@ -1,16 +1,22 @@
 import solvers from 'contracts/solvers/index';
-import { mapShortHand, solverTestFactory } from '/contracts/solverFactory.js';
+import { mapShortHand, solverTestFactory, showMap } from '/contracts/solverFactory.js';
 import { unitTests as validatorTests } from '/contracts/lib/validator';
 
 /** @param {NS} ns */
 export async function main(ns) {
     const {
-        s: which
+        s: which,
+        m: displayMap
     } = ns.flags([
-        ['s', 'all']
+        ['s', 'all'],
+        ['m', false],
     ]);
 
     ns.ui.clearTerminal();
+
+    if (displayMap) {
+        showMap(ns);
+    }
     switch (which) {
         case 'all': await runAllTests(ns); break;
         case 'util': runUtilTests(ns); break;
@@ -34,6 +40,6 @@ async function runSolverTest(ns, which) {
     if (unitTests) {
         await unitTests(ns);
     } else {
-        ns.tprint(`No Unit Tests found for ${contractType} (${which})`);
+        ns.tprintRaw(`No Unit Tests found for ${contractType} (${which})`);
     }
 }

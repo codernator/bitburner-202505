@@ -1,6 +1,6 @@
 import { validateParens } from '/contracts/lib/validator.js';
 
-export default function solve(ns, input, logger = () => {}) {
+export function solve(ns, input, logger = () => {}) {
     logger(`attempting sanitize parens with ${input}`);
 	if (validateParens(input)) return [input];
 

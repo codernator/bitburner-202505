@@ -2,7 +2,7 @@ const fofx = x => x * x;
 const fprimeofx = x => x / 2;
 const xofnplus1 = xofn => Math.abs(xofn - fofx(xofn)/fprimeofx(xofn));
 
-export default function solve(ns, input, logger = () => {}) {
+export function solve(ns, input, logger = () => {}) {
     throw 'Square Root -- Not Implemented';
 
     let x = input / 2;

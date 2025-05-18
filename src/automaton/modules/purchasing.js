@@ -1,5 +1,5 @@
 import config from '../.config';
-import { ApprovalReason, Buyer } from '../lib/enums';
+import { ApprovalReason, Buyer, HacknetProduct } from '../lib/enums';
 import RequisitionResponse from '../lib/requisitionResponse';
 import StateCache from '../lib/stateCache';
 /** +TEMPLATE Accountants */
@@ -24,7 +24,6 @@ const buyerAccountantMap = {
 const {
     purchasing: {
         ports: {
-            logPort,
             requisitionsPort,
             approvalsPorts,
             accountantStatePort,
@@ -40,7 +39,6 @@ const {
 export async function main(ns) {
     ns.clearLog();
     ns.disableLog("ALL");
-    ns.ui.openTail();
 
     var buyerLocks = new StateCache(
         StateCache.createDefaultUnPersistFunc(ns, accountantStatePort),
@@ -48,8 +46,6 @@ export async function main(ns) {
     );
     const incomeAccountant = await IncomeAccountant.create(ns);
     while (true) {
-        processLogs(ns);
-
         const requisition = pollRequisitions(ns);
         if (requisition !== null) {
             const income = incomeAccountant.calcIncome(ns);
@@ -60,14 +56,6 @@ export async function main(ns) {
         buyerLocks.invalidate();
 
         await ns.sleep(25);
-    }
-}
-
-/** @param {NS} ns */
-function processLogs(ns) {
-    var target = ns.readPort(logPort);
-    if (target !== 'NULL PORT DATA') {
-        ns.print(target);
     }
 }
 
@@ -83,11 +71,10 @@ function sendResponse(ns, requisition, response) {
     ns.writePort(approvalsPorts[requisition.buyer], JSON.stringify(response));
 }
 
-function getBuyerConfig(buyer, product) {
+function getBuyerConfig(buyer, product, ns) {
     const buyerConfig = buyers[buyer];
     if (!buyerConfig) return buyerDefaults;
-    if (buyerConfig[product]) return buyerConfig[product];
-    return buyerConfig;
+    return buyerConfig.overrides?.[product] ?? buyerConfig;
 }
 
 /** @param {NS} ns */
@@ -100,7 +87,7 @@ function processRequisition(ns, requisition, income, buyerLocks) {
     if (buyerLocks.has(buyer)) 
         return RequisitionResponse.Denied(ApprovalReason.BuyerLocked, requisition);
 
-    const buyerConfig = getBuyerConfig(buyer, product);
+    const buyerConfig = getBuyerConfig(buyer, product, ns);
     if (!buyerConfig.enablePurchasing) 
         return RequisitionResponse.Denied(ApprovalReason.BuyerSuspended, requisition);
 

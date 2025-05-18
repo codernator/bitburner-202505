@@ -4,8 +4,8 @@ import { Buyer, HacknetProduct } from './lib/enums';
 // -------------------------------------
 const requiredSavings = 33_000_000; // how much the Purchasing wants to save before approving a purchase.
 const requiredHostRam = 64; // minimum ram on servers in the attack network to allow for hosting attacks on them.
-const requiredHomeRam = 512; // how much ram to ensure always is free on home.
-const requiredHomeThreads = 4096; // number of threads to use for attacks on home.
+const requiredHomeRam = 128; // how much ram to ensure always is free on home.
+const requiredHomeThreads = 4; // number of threads to use for attacks on home.
 const maxNumAttackers = 4;
 const useHome = true;
 const useRootedServers = true;
@@ -28,6 +28,7 @@ const allPorts = {
         approvalsPorts: {
             [Buyer.HacknetBuyer]: 42069,
             [Buyer.ServerBuyer]: 42077,
+            [Buyer.GangBuyer]: 1337,
         }
     },
 };
@@ -121,9 +122,11 @@ function createHackerTranager() {
         growCondition(target) ? 'g' : null,
         hackCondition(target) ? 'h' : null,
     ].filter(a => a !== null);
+
     
     return ({
         attackScript: "/tools/hacker.js",
+        lockDuration: 10 * 60 * 1_000, // 10 minutes
     
         weakCondition,
         growCondition,
@@ -198,14 +201,9 @@ function createController() {
             logPort
         },
         purchasing: purchasingPorts,
-        stateCache: {
-            hackerStatePort,
-        },
     } = allPorts;
 
     return ({
-        lockDuration: 10 * 60 * 1_000, // 10 minutes
-        ports: { ...allPorts.automaton, hackerStatePort, },
         modules: [
             {
                 script: '/automaton/modules/purchasing.js',
@@ -233,12 +231,30 @@ function createController() {
             {
                 script: '/automaton/modules/hackerTranager.js',
                 enabled: true,
-                createArgs: stateCache => [ '-q', queuePort, '-a', ackPort, '--logport', logPort, '--state', stateCache.serialize() ],
+                createArgs: () => [
+                    '--queueport', queuePort,
+                    '--ackport', ackPort,
+                    '--logport', logPort 
+                ],
             },
             {
                 script: '/automaton/modules/shareTranager.js',
                 enabled: true,
                 createArgs: () => [ '--logport', logPort ],
+            },
+            {
+                script: '/automaton/modules/gangTranager.js',
+                enabled: true,
+                createArgs: () => [
+                    '--logport', purchasingPorts.logPort,
+                    '--reqport', purchasingPorts.requisitionsPort ,
+                    '--ackport', purchasingPorts.approvalsPorts[Buyer.GangBuyer],
+                ],
+            },
+            {
+                script: '/automaton/modules/logTranager.js',
+                enabled: true,
+                createArgs: () => [],
             },
         ],
     });

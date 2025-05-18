@@ -1,4 +1,4 @@
-import solvers from '/contracts/solvers/index.js';
+import solvers from '/contracts/solvers/index';
 
 export default function solverFactory(contractType) {
 	for (let solver of solvers) {
@@ -29,7 +29,7 @@ export function mapShortHand(ct) {
 
 export function showMap(ns) {
 	for (let solver of solvers.sort((s1, s2) => s1.name.localeCompare(s2.name))) {
-		const { name, shortcuts, method } = solver;
-		ns.tprint(`${name}, ${shortcuts}, ${(!method ? 'NULL' : 'OK')}`);
+		const { name, shortcut, method, unitTests } = solver;
+		ns.tprintRaw(`${name}, ${shortcut}, ${(!method ? 'NULL' : 'OK')}, ${(!unitTests ? 'NULL' : 'OK')}`);
 	}
 }

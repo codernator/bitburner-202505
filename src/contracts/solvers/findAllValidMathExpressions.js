@@ -5,7 +5,7 @@ Output: ['1+2+3', '1*2*3']
 Input: digits = '105', target = 5
 Output: ['1*0+5', '10-5']
 */
-export default async function solve(ns, inputs, logger = () => {}) {
+export async function solve(ns, inputs, logger = () => {}) {
     logger(`Attempting FAVME with ${inputs}.`);
     const [digitlist, targetValue] = inputs;
     const digits = digitlist.split('').map(c => parseInt(c, 10));

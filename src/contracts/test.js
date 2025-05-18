@@ -40,6 +40,9 @@ async function testByExisting(ns, dummy, tryit, verbose) {
 		return;
 	}
 	const inputs = ns.codingcontract.getData(dummy, 'home');
+	if (verbose) {
+		ns.tprint({ contractType, inputs });
+	}
 	const answer = await solver(ns, inputs, msg => ns.tprint(msg));
 	if (!tryit) {
 		ns.tprint({ title: 'Would have tried', answer });

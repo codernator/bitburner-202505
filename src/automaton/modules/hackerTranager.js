@@ -3,8 +3,18 @@ import config from '../.config';
 import StateCache from '../lib/stateCache';
 
 const {
+    allPorts: {
+        automaton: {
+            ackPort,
+            logPort,
+        },
+        stateCache: {
+            hackerStatePort,
+        },
+    },
     hackerTranager: {
         attackScript,
+        lockDuration,
 
         getAttacks,
 
@@ -17,13 +27,6 @@ const {
         attackerHostPrefix,
     }
 } = config;
-
-const schema = [
-    ['q', 0],       // port on which to queue an attack
-    ['a', 0],       // port on which to acknowledge completion
-    ['logport', 0], // port on which to send log messages
-    ['state', ''],  // servers already under attack
-];
 
 const getThreads = host => host.maxRam / 2; // the attack script requires just under 2GB of RAM.
 
@@ -88,26 +91,34 @@ class HostTracker {
     }
 }
 
+const createAttackKey = (targetName, attackMode) => ({ targetName, attackMode });
+
 /** @param {NS} ns */
 export async function main(ns) {
-    const {
-        q: queuePort,
-        a: ackPort,
-        logport,
-        state
-    } = ns.flags(schema);
-
+    ns.clearLog();
     ns.disableLog("ALL");
-    ns.print(`HACKMAN with q:${queuePort} a:${ackPort} s:${state}`);
+    const logger = msg => ns.writePort(logPort, msg);
+    // logger(`HackerTranager with q:${queuePort} a:${ackPort}`);
 
+    const stateCache = new StateCache(
+        StateCache.createDefaultUnPersistFunc(ns, hackerStatePort),
+        StateCache.createDefaultPersistFunc(ns, hackerStatePort),
+        ns
+    );
+    processAcks(ns, stateCache, logger);
+    attack(ns, stateCache, logger);
+    stateCache.invalidate();
+
+    stateCache.save();
+}
+
+function attack(ns, stateCache, logger) {
     const hackingLevel = ns.getHackingLevel();
     const allservers = [...new SpiderScanner().scan(ns, SpiderScanMode.Hacked)];
     const hostable = new HostTracker([...getHosts(ns, allservers)]);
-
-    const underAttack = StateCache.deserialize(state);
     const hackable = getHackable(allservers, hackingLevel)
-        .filter(tpl => !underAttack.has({ hostname: tpl.server.hostname, attackMode: tpl.attackMode }));
-      
+        .filter(tpl => !stateCache.has(createAttackKey(tpl.server.hostname, tpl.attackMode)));
+
     for (let { server, attackMode } of hackable) {
         const host = hostable.next();
         if (host === null)
@@ -116,12 +127,23 @@ export async function main(ns) {
         const { hostname, threads } = host;
         const { hostname: targetName } = server;
 
-        ns.writePort(logport, createLogMessage(ns, server, host, attackMode, threads));
-        ns.writePort(queuePort, JSON.stringify({ targetName, attackMode}));
+        logger(createLogMessage(ns, server, host, attackMode, threads));
+        stateCache.track(createAttackKey(targetName, attackMode), lockDuration);
 
         if (hostname !== 'home')
             ns.scp(attackScript, hostname);
         ns.exec(attackScript, hostname, { threads }, ...['-a', attackMode, '-s', targetName, '-p', ackPort, '-c', threads])
+    }
+}
+
+function processAcks(ns, stateCache, logger) {
+    let target = ns.readPort(ackPort);
+    while (target !== 'NULL PORT DATA') {
+        const { targetName, attackMode } = JSON.parse(target);
+        logger(`Releasing ${targetName} (${attackMode}).`);
+        stateCache.untrack(createAttackKey(targetName, attackMode));
+
+        target = ns.readPort(ackPort);
     }
 }
 

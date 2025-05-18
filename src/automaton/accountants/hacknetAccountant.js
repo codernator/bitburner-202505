@@ -1,5 +1,4 @@
-import { Buyer, HacknetProduct } from '../lib/enums';
-import config from '../.config';
+import { HacknetProduct } from '../lib/enums';
 
 const productMethods = {
     [HacknetProduct.Level]: {
@@ -35,4 +34,3 @@ export default class Accountant {
         return func(ns, index);
     }
 }
-

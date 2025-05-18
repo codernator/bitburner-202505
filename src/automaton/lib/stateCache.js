@@ -6,14 +6,13 @@ const createCacheItem = (value, cacheTime, expiration) => ({
     expiration,
 });
 
-const elementKeyFunc = element => JSON.stringify(element.value);
 const valueKeyFunc = value => JSON.stringify(value);
+const elementKeyFunc = element => valueKeyFunc(element.value);
 export default class StateCache {
     static serialize(state) {
         return JSON.stringify([...state]);
     }
 
-    /** @param {NS} ns */
 	static deserialize(stateString) {
          const items = JSON.parse(stateString);
          const state = new ObjectSet(elementKeyFunc);

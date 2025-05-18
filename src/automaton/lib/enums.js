@@ -40,17 +40,34 @@ export class ApprovalReason {
 export class Buyer {
     static get HacknetBuyer() { return 'hacknetbuyer'; };
     static get ServerBuyer() { return 'serverbuyer'; };
+    static get GangBuyer() { return 'gangbuyer'; };
 
     static Parse(code) {
         switch (code) {
             case Buyer.HacknetBuyer:
             case Buyer.ServerBuyer:
+            case Buyer.GangBuyer:
                 return code;
             default: 
                 return null;
         }
     }
 };
+
+export class GangProduct {
+    static get Equipment() { return 'equipment'; };
+    static get Augment() { return 'augment'; };
+
+    static Parse(code) {
+        switch (code) {
+            case GangProduct.Equipment:
+            case GangProduct.Augment:
+                return code;
+            default:
+                return null;
+        }
+    }
+}
 
 export class HacknetProduct {
     static get Server() { return 'server' };

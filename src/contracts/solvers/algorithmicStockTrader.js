@@ -23,7 +23,6 @@ export async function solve1(ns, inputs, logger = () => {}) {
 export async function solve2(ns, inputs, logger = () => {}) {
     const prices = inputs;
     const maxTransactions = Number.MAX_SAFE_INTEGER;
-    logger({ ast2: { maxTransactions, prices }});
     if (prices.length < 2) return 0;
 
     const profits = [];

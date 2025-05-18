@@ -9,17 +9,21 @@ const {
 
 const schema = [
     ['logport', 0], // port on which to send log messages
+    ['v', false],
 ];
 /** @param {NS} ns */
 export async function main(ns) {
     const {
         logport,
+        v: verbose,
     } = ns.flags(schema);
-    
-    tryshare(ns, logport);
+    const logger = verbose
+        ? msg => ns.writePort(logport, msg)
+        : () => {}; 
+    tryshare(ns, logger);
 }
 
-function tryshare(ns, logport) {
+function tryshare(ns, logger) {
     if (!enableSharing) 
         return;
         
@@ -32,8 +36,7 @@ function tryshare(ns, logport) {
             const threads = maxRam / 4;
             ns.scp(shareScript, hostname);
             const sharepid = ns.exec(shareScript, hostname, { threads });
-            if (logport > 0)
-                ns.writePort(logport, `Activating sharer on ${hostname} with ${ns.formatRam(maxRam)} using ${threads} threads -- PID = ${sharepid}.`);
+            logger(`Activating sharer on ${hostname} with ${ns.formatRam(maxRam)} using ${threads} threads -- PID = ${sharepid}.`);
         }
     }
 }

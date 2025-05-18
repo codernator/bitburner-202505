@@ -1,24 +1,27 @@
-import ObjectSet from '/lib/objectSet.js';
-import * as algorithmicStockTrader from './algorithmicStockTrader.js';
-import solveFindAllValidMathExpressions, { unitTests as testFindAllValidMathExpressions, unitTests } from './findAllValidMathExpressions';
-import solveSanitizeParenthesisInExpression, { unitTests as testSanitizeParenthesisInExpression } from './sanitizeParenthesesInExpression';
-import solveSquareRoot, { unitTests as testSquareRoot } from './squareRoot';
-import solveSubarrayWithMaximumSum, { unitTests as testSubarrayWithMaximumSum } from './subarrayWithMaximumSum';
-import * as totalWaysToSum from './totalWaysToSum.js';
+import ObjectSet from '/lib/objectSet';
+import * as algorithmicStockTrader from './algorithmicStockTrader';
+import * as arrayJumpingGame from './arrayJumpingGame';
+import * as compression from './compression';
+import * as encryption from './encryption';
+import * as findAllValidMathExpressions from './findAllValidMathExpressions';
+import * as sanitizeParenthesisInExpression from './sanitizeParenthesesInExpression';
+import * as squareRoot from './squareRoot';
+import * as subarrayWithMaximumSum  from './subarrayWithMaximumSum';
+import * as totalWaysToSum from './totalWaysToSum';
 
 export default [
 	{ name: 'Algorithmic Stock Trader I', shortcut: 'ast1', method: algorithmicStockTrader.solve1, unitTests: algorithmicStockTrader.unitTests },
 	{ name: 'Algorithmic Stock Trader II', shortcut: 'ast2', method: algorithmicStockTrader.solve2 },
 	{ name: 'Algorithmic Stock Trader III', shortcut: 'ast3', method: algorithmicStockTrader.solve3 },
 	{ name: 'Algorithmic Stock Trader IV', shortcut: 'ast4', method: algorithmicStockTrader.solve4 },
-	{ name: 'Array Jumping Game', shortcut: 'ajg', method: arrayJumpingGame },
-	{ name: 'Array Jumping Game II', shortcut: 'ajg2', method: arrayJumpingGame2 },
-	{ name: 'Compression I: RLE Compression', shortcut: 'c1rc', method: compression1RLECompression },
-	{ name: 'Compression II: LZ Decompression', shortcut: 'c2ld', method: compression2LZDecompression },
-	{ name: 'Compression III: LZ Compression', shortcut: 'c3lc', method: compression3LZCompression },
-	{ name: 'Encryption I: Caesar Cipher', shortcut: 'e1cc', method: encryption1CaesarCipher },
-	{ name: 'Encryption II: Vigenère Cipher', shortcut: 'e2vc', method: encryption2VigenereCipher },
-	{ name: 'Find All Valid Math Expressions', shortcut: 'favme', method: solveFindAllValidMathExpressions, unitTests: testFindAllValidMathExpressions },
+	{ name: 'Array Jumping Game', shortcut: 'ajg', method: arrayJumpingGame.solve1, unitTests: arrayJumpingGame.unitTests },
+	{ name: 'Array Jumping Game II', shortcut: 'ajg2', method: arrayJumpingGame.solve2 },
+	{ name: 'Compression I: RLE Compression', shortcut: 'c1rc', method: compression.solve1 },
+	{ name: 'Compression II: LZ Decompression', shortcut: 'c2ld', method: compression.solve2, unitTests: compression.solve2UnitTests },
+	{ name: 'Compression III: LZ Compression', shortcut: 'c3lc', method: compression.solve3 },
+	{ name: 'Encryption I: Caesar Cipher', shortcut: 'e1cc', method: encryption.solve1 },
+	{ name: 'Encryption II: Vigenère Cipher', shortcut: 'e2vc', method: encryption.solve2 },
+	{ name: 'Find All Valid Math Expressions', shortcut: 'favme', method: findAllValidMathExpressions.solve, unitTests: findAllValidMathExpressions.unitTests },
 	{ name: 'Find Largest Prime Factor', shortcut: 'flpf', method: findLargestPrimeFactor },
 	{ name: 'Generate IP Addresses', shortcut: 'gia', method: generateIPAddresses },
 	{ name: 'HammingCodes: Encoded Binary to Integer', shortcut: 'hebi', method: hammingcodesEncodedBinarytoInteger },
@@ -26,196 +29,16 @@ export default [
 	{ name: 'Merge Overlapping Intervals', shortcut: 'moi', method: mergeOverlappingIntervals },
 	{ name: 'Minimum Path Sum in a Triangle', shortcut: 'mpst', method: minimumPathSuminaTriangle },
 	{ name: 'Proper 2-Coloring of a Graph', shortcut: 'p2g', method: proper2ColoringofaGraph },
-	{ name: 'Sanitize Parentheses in Expression', shortcut: 'spe', method: solveSanitizeParenthesisInExpression, unitTests: testSanitizeParenthesisInExpression },
+	{ name: 'Sanitize Parentheses in Expression', shortcut: 'spe', method: sanitizeParenthesisInExpression.solve, unitTests: sanitizeParenthesisInExpression.unitTests },
 	{ name: 'Shortest Path in a Grid', shortcut: 'spg', method: shortestPathinaGrid },
 	{ name: 'Spiralize Matrix', shortcut: 'sm', method: spiralizeMatrix },
-	{ name: 'Square Root', shortcut: 'sr', method: solveSquareRoot, unitTests: testSquareRoot },
-	{ name: 'Subarray with Maximum Sum', shortcut: 'swms', method: solveSubarrayWithMaximumSum, unitTests: testSubarrayWithMaximumSum },
+	{ name: 'Square Root', shortcut: 'sr', method: squareRoot.solve, unitTests: squareRoot.unitTests },
+	{ name: 'Subarray with Maximum Sum', shortcut: 'swms', method: subarrayWithMaximumSum.solve, unitTests: subarrayWithMaximumSum.unitTests },
 	{ name: 'Total Ways to Sum', shortcut: 'tws', method: totalWaysToSum.solve1, unitTests: totalWaysToSum.unitTests },
 	{ name: 'Total Ways to Sum II', shortcut: 'tws2', method: totalWaysToSum.solve2 },
 	{ name: 'Unique Paths in a Grid I', shortcut: 'upg1', method: uniquePathsinaGrid1 },
 	{ name: 'Unique Paths in a Grid II', shortcut: 'upg2', method: uniquePathsinaGrid2 },
 ];
-
-
-// Array Jumping Game
-export async function arrayJumpingGame(ns, inputs, logger = () => {}) {
-	const CAN = 1;
-	const NOT = 0;
-
-	/** PASSED **/
-	if (!inputs || !inputs.length)
-		return NOT;
-	if (inputs.length === 1)
-		return CAN;
-
-	return canReachElement(inputs, inputs.length -1) ? CAN : NOT;
-
-	function canReachElement(array, end) {
-		if (end === 0)
-			return true;
-		const canReach = [...getAllThatCanReach(array, end)];
-		return canReach.length > 0
-			&& (canReach[0] === 0
-				|| canReach.reduce((p, element) => p || canReachElement(array, element), false));
-	}
-
-	function* getAllThatCanReach(array, element) {
-		for (let i = element - 1; i >= 0; i--) {
-			const distance = element - i;
-			if (array[i] >= distance)
-				yield i;
-		}
-	}
-}
-
-
-// Array Jumping Game II
-export async function arrayJumpingGame2(ns, inputs, logger = () => {}) {
-	/*** PASSED ***/
-	if (!inputs || !inputs.length)
-		return 0;
-	if (inputs.length === 1)
-		return 1;
-
-	const paths = getAllPathsTo(inputs, inputs.length - 1, 0);
-	const result = paths.reduce((p,n) => p === null ? n.length : Math.min(p,n.length), null);
-	logger(inputs);
-	logger(result);
-	return result === null ? 0 : result;
-
-
-	function getAllPathsTo(array, end, iterations) {
-		if (iterations > 1024)
-			throw 'Out of control!';
-		if (end === 0)
-			return [];
-
-		let paths = [];
-		for (let element of getAllThatCanReach(array, end)) {
-			if (element === 0) {
-				paths.push([0]);
-			} else {
-				const subpaths = getAllPathsTo(array, element, iterations + 1);
-				for (let sb of subpaths.filter(p => p.length > 0).map(p => [...p, end]))
-					paths.push(sb);
-			}
-		}
-		return paths;
-	}
-
-	function* getAllThatCanReach(array, element) {
-		for (let i = element - 1; i >= 0; i--) {
-			const distance = element - i;
-			if (array[i] >= distance)
-				yield i;
-		}
-	}
-}
-
-
-// Compression I: RLE Compression
-export async function compression1RLECompression(ns, inputs, logger = () => {}) {
-	const stream = [...countRLE(inputs)];
-	return [...encode(stream)].join('');
-
-	function* encode(stream) {
-		for (let r of stream) {
-			let { letter, count } = r;
-			while (count > 9) {
-				yield `9${letter}`;
-				count -= 9;
-			}
-			yield `${count}${letter}`;
-		}
-	}
-
-	function* countRLE(input) {
-		let letter = null;
-		let count = 0;
-
-		for (let c of input) {
-			if (letter === null) {
-				letter = c;
-				count +=1;
-			} else if (letter !== c) {
-				yield { letter, count };
-				letter = c;
-				count = 1;
-			} else {
-				count += 1;
-			}
-		}
-		yield { letter, count };
-	}
-}
-
-
-// Compression II: LZ Decompression
-export async function compression2LZDecompression(ns, inputs, logger = () => {}) {
-	throw 'Compression II: LZ Decompression -- Not Implemented';
-}
-
-
-// Compression III: LZ Compression
-export async function compression3LZCompression(ns, inputs, logger = () => {}) {
-	throw 'Compression III: LZ Compression -- Not Implemented';
-}
-
-
-// Encryption I: Caesar Cipher
-export async function encryption1CaesarCipher(ns, inputs, logger = () => {}) {
-	/*** PASSED ***/
-	const a = 'A'.charCodeAt(0);
-	const z = 'Z'.charCodeAt(0);
-	const plain = inputs[0].toUpperCase();
-	const shft = parseInt(inputs[1]);
-	const len = plain.length;
-
-	let answer = new Array(len);
-	for (let i = 0; i < len; i++) {
-		if (plain.charAt(i) == ' ') {
-			answer[i] = ' ';
-			continue;
-		}
-
-		const c = plain.charCodeAt(i);
-		const n = c - shft;
-		const adj = n < a
-			? z + (n - a + 1)
-			: n;
-		answer[i] = String.fromCharCode(adj);
-	}
-
-	return answer.join('');
-}
-
-
-// Encryption II: Vigenère Cipher
-export async function encryption2VigenereCipher(ns, inputs, logger = () => {}) {
-	const a = "A".charCodeAt(0);
-	const z = "Z".charCodeAt(0);
-	const [plain, keyword] = inputs;
-
-	const pu = plain.toUpperCase();
-	const ku = keyword.toUpperCase();
-
-	const plainLen = plain.length;
-	const keyLen = keyword.length;
-	const encyphered = new Array(plainLen);
-	for (let i = 0; i < plainLen; i++) {
-		const j = i % keyLen;
-		const ra = pu.charCodeAt(i);
-		const rk = ku.charCodeAt(j);
-		const next = ra + (rk - a);
-		const adjusted = (next > z)
-			? a + (next % (z + 1))
-			: next;
-		encyphered[i] = String.fromCharCode(adjusted);
-	}
-
-	return encyphered.join("");	
-}
 
 // Find Largest Prime Factor
 export async function findLargestPrimeFactor(ns, inputs, logger = () => {}) {
